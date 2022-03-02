@@ -4,7 +4,7 @@ pipeline {
         stage('Build') {
             agent { docker { image 'python:3.10.1-alpine' } }
             steps {
-                sh 'python --version'
+                sh 'python3 -m unittest discover -p "*_test.py"'
             }
         }
         stage('Deploy') {
