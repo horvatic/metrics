@@ -2,9 +2,12 @@ pipeline {
     agent none
     stages {
         stage('Build') {
-            agent { docker { image 'python:3.10.1-alpine' } }
+            agent { docker { image 'python:3' } }
             steps {
-                sh 'python3 -m unittest discover -p "*_test.py"'
+                withEnv(["HOME=${env.WORKSPACE}"]) {
+                    sh 'pip3 install --user psutil'
+                    sh 'python3 -m unittest discover -p "*_test.py"'
+                }
             }
         }
     }
