@@ -1,4 +1,5 @@
 import unittest
+import json
 from src import metircs_service
 
 class TestMetircsService(unittest.TestCase):
@@ -10,12 +11,16 @@ class TestMetircsService(unittest.TestCase):
 class MockSystem:
     def cpu_usage(self):
         return 50
+    def ram_usage(self):
+        return 40
 
 
 def _response() -> str:
-    return str({ 
+    return json.dumps({ 
         "cpu" : { 
             "usage" : 50
+        }, "ram" : {
+            "usage" : 40
         }
     })
 

@@ -45,7 +45,9 @@ def _response() -> str:
     return str({ 
         "cpu" : { 
             "usage" : 50
-        } 
+        }, "ram" : {
+            "usage" : 40
+        }
     })
 
 class MockService:
