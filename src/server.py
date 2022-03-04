@@ -1,13 +1,13 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import response_factory
+import service_factory
 import metircs_controller
 import http_response
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
-_res = response_factory.ResponseFactory()
+_service_factory = service_factory.ServiceFactory()
 
 class MetricsServer(BaseHTTPRequestHandler):
     def do_GET(self):
-        controller = metircs_controller.MetricsController(_res)
+        controller = metircs_controller.MetricsController(_service_factory)
         controller.route(http_response.HttpResponse(self), self.path)
 
 def start(hostName, serverPort, server):

@@ -2,13 +2,13 @@ import unittest
 from unittest.mock import MagicMock
 from src import metircs_controller
 
-class TestMetrics_Controller(unittest.TestCase):
+class TestMetricsController(unittest.TestCase):
 
     def test_route_metircs(self):
         route = "/metircs"
         mock_http_response = MockHttpResponse()
-        mock_response_factory = MockResponseFactory()
-        controller = metircs_controller.MetricsController(mock_response_factory)
+        mock_service_factory = MockServiceFactory()
+        controller = metircs_controller.MetricsController(mock_service_factory)
 
         controller.route(mock_http_response, route)
 
@@ -19,8 +19,8 @@ class TestMetrics_Controller(unittest.TestCase):
     def test_route_404(self):
         route = "/willneverfind"
         mock_http_response = MockHttpResponse()
-        mock_response_factory = MockResponseFactory()
-        controller = metircs_controller.MetricsController(mock_response_factory)
+        mock_service_factory = MockServiceFactory()
+        controller = metircs_controller.MetricsController(mock_service_factory)
 
         controller.route(mock_http_response, route)
 
@@ -31,8 +31,8 @@ class TestMetrics_Controller(unittest.TestCase):
     def test_route_health(self):
         route = "/health"
         mock_http_response = MockHttpResponse()
-        mock_response_factory = MockResponseFactory()
-        controller = metircs_controller.MetricsController(mock_response_factory)
+        mock_service_factory = MockServiceFactory()
+        controller = metircs_controller.MetricsController(mock_service_factory)
 
         controller.route(mock_http_response, route)
 
@@ -45,20 +45,22 @@ def _response() -> str:
     return str({ 
         "cpu" : { 
             "usage" : 50
-        } 
+        }, "ram" : {
+            "usage" : 40
+        }
     })
 
-class MockResponse:
-    def get_cpu_package(self):
+class MockService:
+    def get_metircs_package(self):
         return _response()
     def get_health_package(self):
         return str({"status" : "OK"})
     def get_404_package(self):
         return str("NOT FOUND")
 
-class MockResponseFactory:
-    def build(self):
-        return MockResponse()
+class MockServiceFactory:
+    def build(self, option):
+        return MockService()
 
 class MockHttpResponse:
     status_code = 0
