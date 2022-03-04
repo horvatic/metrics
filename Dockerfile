@@ -7,4 +7,4 @@ COPY ./src .
 RUN pip install psutil
 EXPOSE 5500
 
-CMD [ "python3", "./main.py" ]
+CMD [ "python3", "main.py" ]
