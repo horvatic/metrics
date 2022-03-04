@@ -2,7 +2,9 @@ import response
 import cpu
 import system
 
-_res = response.Response(cpu.Cpu(system.System))
+class ResponseFactory:
+    def __init__(self):
+        self.res = response.Response(cpu.Cpu(system.System))
 
-def build():
-    return _res
+    def build(self):
+        return self.res

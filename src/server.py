@@ -1,19 +1,14 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import response_factory
+import metircs_controller
+import http_response
+
+_res = response_factory.ResponseFactory()
 
 class MetricsServer(BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path != '/metircs':
-            self.send_response(404)
-            self.send_header("Content-type", "text/plain")
-            self.end_headers()
-            self.wfile.write(bytes("NOT FOUND", "utf-8"))
-            return
-        res = response_factory.build()
-        self.send_response(200)
-        self.send_header("Content-type", "application/json")
-        self.end_headers()
-        self.wfile.write(bytes(res.build(), "utf-8"))
+        controller = metircs_controller.MetricsController(_res)
+        controller.route(http_response.HttpResponse(self), self.path)
 
 def start(hostName, serverPort, server):
     webServer = HTTPServer((hostName, serverPort), server)

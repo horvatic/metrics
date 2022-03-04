@@ -1,19 +1,24 @@
 import unittest
-from unittest.mock import MagicMock
 from src import response
-from src import cpu
-from src import system
 
 class TestResponse(unittest.TestCase):
 
-    def test_build(self):
-        c = cpu.Cpu(system.System)
-        c.info = MagicMock(return_value=50)
-        res = response.Response(c)
-        self.assertEqual(res.build(), _response())
+    def test_get_cpu_package(self):
+        res = response.Response(MockCpu())
+        self.assertEqual(res.get_cpu_package(), _response())
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_health_package(self):
+        res = response.Response(MockCpu())
+        self.assertEqual(res.get_health_package(), str({"status" : "OK"}))
+
+    def test_404_package(self):
+        res = response.Response(MockCpu())
+        self.assertEqual(res.get_404_package(), str("NOT FOUND"))
+
+class MockCpu:
+    def info(self):
+        return 50
+
 
 def _response() -> str:
     return str({ 
@@ -21,3 +26,6 @@ def _response() -> str:
             "usage" : 50
         } 
     })
+
+if __name__ == '__main__':
+    unittest.main()
