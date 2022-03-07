@@ -1,4 +1,4 @@
-# metrics
+# Metrics
 
 ## Overview
 A simple metric server
