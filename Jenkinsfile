@@ -46,7 +46,17 @@ pipeline {
 
                     kubectl apply -k "deploy/dev" -n dev
 
+                    sleep 10
+
                     kubectl wait --for=condition=ready pod -l app=met -n dev --timeout=10m
+                '''
+            }
+        }
+        stage('Smoke Test') {
+            agent { docker { image 'curlimages/curl:latest' } }
+            steps {
+                sh '''
+                    curl --fail "${MetricsHealthEndpoint}"
                 '''
             }
         }
