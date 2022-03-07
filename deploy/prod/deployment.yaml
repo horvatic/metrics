@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: met
+  labels:
+    app: met
+spec:
+  revisionHistoryLimit : 5
+  template:
+    metadata:
+      name: met
+      labels:
+        app: met
+    spec:
+      dnsPolicy: ClusterFirstWithHostNet 
+      containers:
+      - name: met
+        livenessProbe:
+          httpGet:
+            path: /prod/met/health
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3

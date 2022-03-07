@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  met
+  labels:
+    app:  met
+spec:
+  selector:
+    matchLabels:
+      app:  met
+  template:
+    spec:
+      containers:
+      - name:  met
+        image: horvatic/metrics:${TAG}
+        env:
+          - name: NAMESPACE
+            valueFrom:
+              configMapKeyRef: 
+                name: met-config
+                key: namespace 
+          - name: SERVICE
+            valueFrom:
+              configMapKeyRef: 
+                name: met-config
+                key: service
+        ports:
+          - containerPort: 8080
+            name: "met-http"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+      nodeSelector:
+        architecture: arm64

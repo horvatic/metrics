@@ -10,7 +10,7 @@ build: test
 
 .PHONY: run
 run: build
-	docker run -p 5500:5500 -d --name=metrics metrics
+	docker run -p 5500:8080 -d --name=metrics metrics
 
 .PHONY: stop
 stop:
