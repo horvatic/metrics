@@ -41,3 +41,12 @@ Stop and Remove Docker Container: ```make stop```
 Remove Docker Image: ```make clean-image```
 
 Stop Containers, Remove Container, and Remove Image: ```make clean```
+
+## CI/CD
+This repo runs off Jenkins
+
+Jenkinsfile-Build: CI Build
+
+Jenkinsfile: Deploys to dev
+
+Jenkinsfile-Prod: Deploys to prod
