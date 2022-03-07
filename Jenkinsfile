@@ -21,22 +21,32 @@ pipeline {
 		        DOCKERHUB_CREDENTIALS=credentials('dockerhub-cred-horvatic')
             }
 			steps {
-				sh 'docker build -t horvatic/metrics:latest .'
-                sh 'docker push horvatic/metrics:latest'
+                sh '''
+				    docker build -t horvatic/metrics:${tag} .
+                    docker push horvatic/metrics:${tag}
+                '''
 			}
 		}
-        stage('Deploy') {
+        stage('Deploy Dev') {
             agent { docker { image 'alpine/k8s:1.19.15' } }
             environment {
                 K8PROFILE = credentials('K8PROFILE')
             }
             steps {
                 sh '''
+                    export TAG="${tag}"
                     export KUBECONFIG=.kube/config
                 
                     mkdir -p .kube
                     echo $K8PROFILE | base64 -d > .kube/config
-                    kubectl get no
+                    
+                    envsubst < deploy/base/deployment.yaml > tempbase
+                    cat tempbase > deploy/base/deployment.yaml
+                    rm tempbase
+
+                    kubectl apply -k "deploy/dev" -n dev
+
+                    kubectl wait --for=condition=ready pod -l app=met -n dev --timeout=10m
                 '''
             }
         }

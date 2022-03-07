@@ -1,6 +1,8 @@
 import unittest
+import os
 from unittest.mock import MagicMock
 from src import metircs_controller
+from src import config
 
 class TestMetricsController(unittest.TestCase):
 
@@ -8,7 +10,25 @@ class TestMetricsController(unittest.TestCase):
         route = "/metircs"
         mock_http_response = MockHttpResponse()
         mock_service_factory = MockServiceFactory()
-        controller = metircs_controller.MetricsController(mock_service_factory)
+        mock_config = config.Config()
+        mock_config.get_namespace = MagicMock(return_value=None)
+        mock_config.get_service = MagicMock(return_value=None)
+        controller = metircs_controller.MetricsController(mock_service_factory, mock_config)
+
+        controller.route(mock_http_response, route)
+
+        self.assertEqual(200, mock_http_response.status_code)
+        self.assertEqual(_response(), mock_http_response.content)
+        self.assertEqual("application/json", mock_http_response.content_type)
+
+    def test_route_metircs_with_env_set(self):
+        route = "/dev/metric/metircs"
+        mock_http_response = MockHttpResponse()
+        mock_service_factory = MockServiceFactory()
+        mock_config = config.Config()
+        mock_config.get_namespace = MagicMock(return_value="dev")
+        mock_config.get_service = MagicMock(return_value="metric")
+        controller = metircs_controller.MetricsController(mock_service_factory, mock_config)
 
         controller.route(mock_http_response, route)
 
@@ -20,7 +40,10 @@ class TestMetricsController(unittest.TestCase):
         route = "/willneverfind"
         mock_http_response = MockHttpResponse()
         mock_service_factory = MockServiceFactory()
-        controller = metircs_controller.MetricsController(mock_service_factory)
+        mock_config = config.Config()
+        mock_config.get_namespace = MagicMock(return_value=None)
+        mock_config.get_service = MagicMock(return_value=None)
+        controller = metircs_controller.MetricsController(mock_service_factory, mock_config)
 
         controller.route(mock_http_response, route)
 
@@ -32,7 +55,10 @@ class TestMetricsController(unittest.TestCase):
         route = "/health"
         mock_http_response = MockHttpResponse()
         mock_service_factory = MockServiceFactory()
-        controller = metircs_controller.MetricsController(mock_service_factory)
+        mock_config = config.Config()
+        mock_config.get_namespace = MagicMock(return_value=None)
+        mock_config.get_service = MagicMock(return_value=None)
+        controller = metircs_controller.MetricsController(mock_service_factory, mock_config)
 
         controller.route(mock_http_response, route)
 
@@ -40,6 +66,20 @@ class TestMetricsController(unittest.TestCase):
         self.assertEqual(str({"status" : "OK"}), mock_http_response.content)
         self.assertEqual("application/json", mock_http_response.content_type)
 
+    def test_route_health_with_env(self):
+        route = "/dev/metric/health"
+        mock_http_response = MockHttpResponse()
+        mock_service_factory = MockServiceFactory()
+        mock_config = config.Config()
+        mock_config.get_namespace = MagicMock(return_value="dev")
+        mock_config.get_service = MagicMock(return_value="metric")
+        controller = metircs_controller.MetricsController(mock_service_factory, mock_config)
+
+        controller.route(mock_http_response, route)
+
+        self.assertEqual(200, mock_http_response.status_code)
+        self.assertEqual(str({"status" : "OK"}), mock_http_response.content)
+        self.assertEqual("application/json", mock_http_response.content_type)
 
 def _response() -> str:
     return str({ 
