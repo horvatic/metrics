@@ -19,11 +19,12 @@ pipeline {
             }
         	environment {
 		        DOCKERHUB_CREDENTIALS=credentials('dockerhub-cred-horvatic')
+                SHORT_COMMIT = "${GIT_COMMIT[0..7]}"
             }
 			steps {
                 sh '''
-				    docker build -t horvatic/metrics:${tag} .
-                    docker push horvatic/metrics:${tag}
+				    docker build -t horvatic/metrics:$SHORT_COMMIT .
+                    docker push horvatic/metrics:$SHORT_COMMIT
                 '''
 			}
 		}
@@ -31,10 +32,11 @@ pipeline {
             agent { docker { image 'alpine/k8s:1.19.15' } }
             environment {
                 K8PROFILE = credentials('K8PROFILE')
+                SHORT_COMMIT = "${GIT_COMMIT[0..7]}"
             }
             steps {
                 sh '''
-                    export TAG="${tag}"
+                    export TAG="$SHORT_COMMIT"
                     export KUBECONFIG=.kube/config
                 
                     mkdir -p .kube
