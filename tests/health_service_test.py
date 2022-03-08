@@ -9,6 +9,9 @@ class TestHealthService(unittest.TestCase):
         service = health_service.HealthService()
         self.assertEqual(service.get_health_package(), json.dumps({"status" : "OK"}))
 
+    def test_health_package(self):
+        service = health_service.HealthService()
+        self.assertEqual(service.get_health_package(), json.dumps({"status" : "Failed"}))
 
 if __name__ == '__main__':
     unittest.main()
