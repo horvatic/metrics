@@ -1,7 +1,7 @@
 # Metrics
 
 ## Overview
-A simple metric server
+A simple metric server, used to CPU, RAM, and DISK info
 
 ## Local Dev
 
