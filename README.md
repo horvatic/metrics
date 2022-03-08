@@ -27,7 +27,7 @@ Running: `make run`
 
 Stop: `make clean`
 
-### Other Comamnds
+## Other Comamnds
 All commands are located in Makefile, and uses make
 
 Run Test: ```make test```
@@ -50,3 +50,6 @@ Jenkinsfile-Build: CI Build
 Jenkinsfile: Deploys to dev
 
 Jenkinsfile-Prod: Deploys to prod
+
+## License
+MIT
