@@ -7,11 +7,11 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 _service_factory = service_factory.ServiceFactory()
 
 class MetricsServer(BaseHTTPRequestHandler):
-    def do_GET(self):
-        controller = metircs_controller.MetricsController(_service_factory, config.Config)
-        controller.route(http_response.HttpResponse(self), self.path)
+    def do_GET(self): # Listen for all GET request
+        controller = metircs_controller.MetricsController(_service_factory, config.Config) # Makes a new controller
+        controller.route(http_response.HttpResponse(self), self.path) # Routes the request with a response object
 
-def start(hostName, serverPort, server):
+def start(hostName, serverPort, server): # Starts the server
     webServer = HTTPServer((hostName, serverPort), server)
     print("Server started http://%s:%s" % (hostName, serverPort))
 
