@@ -1,9 +1,9 @@
 import unittest
 from unittest.mock import MagicMock
-from src import metircs_controller
+from src import controller
 from src import config
 
-class TestMetricsController(unittest.TestCase):
+class TestController(unittest.TestCase):
 
     def test_route_health(self):
         route = "/health"
@@ -12,9 +12,9 @@ class TestMetricsController(unittest.TestCase):
         mock_config = config.Config()
         mock_config.get_namespace = MagicMock(return_value=None)
         mock_config.get_service = MagicMock(return_value=None)
-        controller = metircs_controller.MetricsController(mock_service_factory, mock_config)
+        control = controller.Controller(mock_service_factory, mock_config)
 
-        controller.route(mock_http_response, route)
+        control.route(mock_http_response, route)
 
         self.assertEqual(200, mock_http_response.status_code)
         self.assertEqual(str({"status" : "OK"}), mock_http_response.content)
@@ -27,17 +27,34 @@ class TestMetricsController(unittest.TestCase):
         mock_config = config.Config()
         mock_config.get_namespace = MagicMock(return_value="dev")
         mock_config.get_service = MagicMock(return_value="metric")
-        controller = metircs_controller.MetricsController(mock_service_factory, mock_config)
+        control = controller.Controller(mock_service_factory, mock_config)
 
-        controller.route(mock_http_response, route)
+        control.route(mock_http_response, route)
 
         self.assertEqual(200, mock_http_response.status_code)
         self.assertEqual(str({"status" : "OK"}), mock_http_response.content)
         self.assertEqual("application/json", mock_http_response.content_type)
 
+    def test_route_404(self):
+        route = "/willneverfind"
+        mock_http_response = MockHttpResponse()
+        mock_service_factory = MockServiceFactory()
+        mock_config = config.Config()
+        mock_config.get_namespace = MagicMock(return_value=None)
+        mock_config.get_service = MagicMock(return_value=None)
+        control = controller.Controller(mock_service_factory, mock_config)
+
+        control.route(mock_http_response, route)
+
+        self.assertEqual(404, mock_http_response.status_code)
+        self.assertEqual("NOT FOUND", mock_http_response.content)
+        self.assertEqual("text/plain", mock_http_response.content_type)
+
 class MockService:
     def get_health_package(self):
         return str({"status" : "OK"})
+    def get_404_package(self):
+        return str("NOT FOUND")
         
 class MockServiceFactory:
     def build(self, option):
