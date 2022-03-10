@@ -26,5 +26,31 @@ pipeline {
                 '''
 			}
 		}
+        stage('Deploy Dev') {
+            agent { docker { image 'alpine/k8s:1.19.15' } }
+            environment {
+                K8PROFILE = credentials('K8PROFILE')
+                SHORT_COMMIT = "${GIT_COMMIT[0..7]}"
+            }
+            steps {
+                sh '''
+                    export TAG="$SHORT_COMMIT"
+                    export KUBECONFIG=.kube/config
+                
+                    mkdir -p .kube
+                    echo $K8PROFILE | base64 -d > .kube/config
+                    
+                    envsubst < deploy/base/deployment.yaml > tempbase
+                    cat tempbase > deploy/base/deployment.yaml
+                    rm tempbase
+
+                    kubectl apply -k "deploy/dev" -n dev
+
+                    sleep 10
+
+                    kubectl wait --for=condition=ready pod -l app=met -n dev --timeout=10m
+                '''
+            }
+        }
     }
 }
