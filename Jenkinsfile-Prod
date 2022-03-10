@@ -1,0 +1,38 @@
+pipeline {
+    agent none
+    stages {      
+        stage('Deploy Prod') {
+            agent { docker { image 'alpine/k8s:1.19.15' } }
+            environment {
+                K8PROFILE = credentials('K8PROFILE')
+            }
+            steps {
+                sh '''
+                    export TAG="${tag}"
+                    export KUBECONFIG=.kube/config
+                
+                    mkdir -p .kube
+                    echo $K8PROFILE | base64 -d > .kube/config
+                    
+                    envsubst < deploy/base/deployment.yaml > tempbase
+                    cat tempbase > deploy/base/deployment.yaml
+                    rm tempbase
+
+                    kubectl apply -k "deploy/prod" -n prod
+
+                    sleep 10
+
+                    kubectl wait --for=condition=ready pod -l app=met -n prod --timeout=10m
+                '''
+            }
+        }
+        stage('Smoke Test') {
+            agent { docker { image 'curlimages/curl:latest' } }
+            steps {
+                sh '''
+                    curl --fail "${MetricsHealthEndpoint}"
+                '''
+            }
+        }
+    }
+}
