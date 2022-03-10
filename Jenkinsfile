@@ -52,5 +52,13 @@ pipeline {
                 '''
             }
         }
+        stage('Smoke Test') {
+            agent { docker { image 'curlimages/curl:latest' } }
+            steps {
+                sh '''
+                    curl --fail "${MetricsHealthEndpoint}"
+                '''
+            }
+        }
     }
 }
